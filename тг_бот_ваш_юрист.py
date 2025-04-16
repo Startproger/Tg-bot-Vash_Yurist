@@ -117,8 +117,6 @@ def view_reviews(message):
     else:
         bot.send_message(message.chat.id, "Пока нет ни одного отзыва.", reply_markup=main_menu())
 
-# ------------------------
-
 # Функция для отображения отзывов постранично (пример)
 def show_reviews_page(message, page_num):
     reviews = db.all()
@@ -145,7 +143,6 @@ def show_reviews_page(message, page_num):
 
     bot.send_message(message.chat.id, text, reply_markup=keyboard)
 
-# ------------------------
 # Обработчик callback запросов от Inline кнопок
 @bot.callback_query_handler(func=lambda call: True)
 def callback_query(call):
