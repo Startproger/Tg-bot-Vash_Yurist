@@ -3,9 +3,9 @@ import random
 from telebot.types import ReplyKeyboardMarkup, KeyboardButton, InlineKeyboardMarkup, InlineKeyboardButton
 import threadingу
 from tinydb import TinyDB, Query
-TOKEN = "7647362919:AAFnN_KNj8S5Du-cAVUzPM9XGT_SYLtxcxQ"  # Замените на токен вашего бота
+TOKEN = "# Сюда запишите свой токен"
 bot = telebot.TeleBot(TOKEN)
-ADMIN_TELEGRAM_ID = 2027072686
+ADMIN_TELEGRAM_ID = #Сюда запишите свой ID
 tasks = {}
 db = TinyDB('reviews.json')
 consultations = db.table('consultations')
