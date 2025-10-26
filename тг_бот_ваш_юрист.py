@@ -1,19 +1,20 @@
 import telebot
+import time
 import random
 from telebot.types import ReplyKeyboardMarkup, KeyboardButton, InlineKeyboardMarkup, InlineKeyboardButton
-import threadingу
+import threading
 from tinydb import TinyDB, Query
-TOKEN = "# Сюда запишите свой токен"
+TOKEN = "7647362919:AAFnN_KNj8S5Du-cAVUzPM9XGT_SYLtxcxQ"# Сюда запишите свой токен
 bot = telebot.TeleBot(TOKEN)
-ADMIN_TELEGRAM_ID = #Сюда запишите свой ID
+ADMIN_TELEGRAM_ID = 2027072686 #Сюда запишите свой ID
 tasks = {}
-db = TinyDB('reviews.json')
-consultations = db.table('consultations')
+db = TinyDB('review.json')
+Consultations = db.table('Consultations')
 Review = Query()
 
 # --------------------- Функции для базы данных ---------------------
 def save_consultation(user_id, name, history):
-    consultations.insert({
+    Consultations.insert({
         'user_id': user_id,
         'name': name,
         'history': history,
@@ -70,7 +71,7 @@ def get_history(message):
         user_link = f"tg://user?id={user_id}" # Fallback, если не удалось получить информацию
 
 
-    consultations = f"""
+    Consultations = f"""
     Новая заявка на консультацию:
     \nИмя: {name}
     \nИстория: {history}
@@ -78,7 +79,7 @@ def get_history(message):
     """
 
     if save_consultation(user_id, name, history):
-        bot.send_message(ADMIN_TELEGRAM_ID, consultations)
+        bot.send_message(ADMIN_TELEGRAM_ID, Consultations)
         bot.send_message(user_id, "Спасибо! Ваша заявка на консультацию принята. Вам скоро ответят.",
                          reply_markup=main_menu())
     else:
@@ -90,8 +91,9 @@ def get_history(message):
 #-----------------------функция удаления отзывов
 @bot.message_handler(func=lambda message: message.text == "clean")
 def ask_for_review(message):
-  with open("reviews.json", "w") as file:
+  with open("review.json", "w") as file:
       file.truncate()
+  bot.send_message(message.chat.id, "Clean success", reply_markup=main_menu())
 
 @bot.message_handler(func=lambda message: message.text == "Оставить отзыв")
 def ask_for_review(message):
@@ -117,7 +119,7 @@ def view_reviews(message):
     else:
         bot.send_message(message.chat.id, "Пока нет ни одного отзыва.", reply_markup=main_menu())
 
-# Функция для отображения отзывов постранично (пример)
+# Функция для отображения отзывов постранично
 def show_reviews_page(message, page_num):
     reviews = db.all()
     reviews_per_page = 3  # Количество отзывов на странице
@@ -158,9 +160,17 @@ def callback_query(call):
 # --------------------- Обработчик для всего остального ---------------------
 @bot.message_handler(func=lambda message: True)
 def echo_all(message):
-    bot.reply_to(message, "Я не понимаю вас. Пожалуйста, используйте кнопки меню.", reply_markup=main_menu())
+    bot.send_message(message.chat.id, "Я не понимаю вас. Пожалуйста, используйте кнопки меню.", reply_markup=main_menu())
 
-bot.polling(none_stop=True)
+while True:
+    try:
+        print("🟢 Бот запускается...")
+        bot.polling(none_stop=True, timeout=60)
+    except Exception as e:
+        print(f"🔴 Ошибка соединения: {e}")
+        print("🔄 Перезапуск через 15 секунд...")
+        time.sleep(15)
+
 #Устоновка библиотек в googl collab
 #!pip install telebot
 #!pip install tinydb
